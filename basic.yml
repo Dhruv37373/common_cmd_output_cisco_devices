@@ -1,0 +1,105 @@
+---
+- name: Execute Commands on Cisco Devices
+  hosts: cisco_devices
+  gather_facts: false
+  connection: network_cli
+  tasks:
+
+    - name: Show MAC address table
+      ios_command:
+        commands:
+          - show mac address-table
+      register: mac_output
+
+    - name: Show IP ARP
+      ios_command:
+        commands:
+          - show ip arp
+      register: arp_output
+
+    - name: Initialize combined output file
+      copy:
+        content: ""
+        dest: "/path/to/combined_output.txt"
+
+    - name: Execute show lldp neighbors details
+      ios_command:
+        commands:
+          - show lldp neighbors details
+      register: lldp_output
+
+    - name: Execute show cdp neighbors details
+      ios_command:
+        commands:
+          - show cdp neighbors details
+      register: cdp_output
+
+    - name: Execute show etherchannel summary
+      ios_command:
+        commands:
+          - show etherchannel summary
+      register: etherchannel_output
+
+    - name: Execute show interface description
+      ios_command:
+        commands:
+          - show interface description
+      register: interface_desc_output
+
+    - name: Execute show interface status
+      ios_command:
+        commands:
+          - show interface status
+      register: interface_status_output
+
+    - name: Execute show ip interface brief
+      ios_command:
+        commands:
+          - show ip interface brief
+      register: ip_brief_output
+
+    - name: Append outputs to combined output file with device IP separator
+      lineinfile:
+        line: "{{ inventory_hostname }} === Device IP=== {{ hostvars[inventory_hostname]['ansible_host'] }} "
+        dest: "/path/to/combined_output.txt"
+
+    - name: Append MAC address table output to combined output file
+      lineinfile:
+        line: "{{ mac_output.stdout[0] }}"
+        dest: "/path/to/combined_output.txt"
+
+    - name: Append IP ARP output to combined output file
+      lineinfile:
+        line: "{{ arp_output.stdout[0] }}"
+        dest: "/path/to/combined_output.txt"
+
+    - name: Append show lldp neighbors details output to combined output file
+      lineinfile:
+        line: "{{ lldp_output.stdout[0] }}"
+        dest: "/path/to/combined_output.txt"
+
+    - name: Append show cdp neighbors details output to combined output file
+      lineinfile:
+        line: "{{ cdp_output.stdout[0] }}"
+        dest: "/path/to/combined_output.txt"
+
+    - name: Append show etherchannel summary output to combined output file
+      lineinfile:
+        line: "{{ etherchannel_output.stdout[0] }}"
+        dest: "/path/to/combined_output.txt"
+
+    - name: Append show interface description output to combined output file
+      lineinfile:
+        line: "{{ interface_desc_output.stdout[0] }}"
+        dest: "/path/to/combined_output.txt"
+
+    - name: Append show interface status output to combined output file
+      lineinfile:
+        line: "{{ interface_status_output.stdout[0] }}"
+        dest: "/path/to/combined_output.txt"
+
+    - name: Append show ip interface brief output to combined output file
+      lineinfile:
+        line: "{{ ip_brief_output.stdout[0] }}"
+        dest: "/path/to/combined_output.txt"
+

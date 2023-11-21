@@ -1,0 +1,39 @@
+---
+- name: Execute Commands on Cisco Devices
+  hosts: cisco_devices
+  gather_facts: false
+  connection: network_cli
+  tasks:
+    - name: Initialize combined output file
+      copy:
+        content: ""
+        dest: "/path/to/combined_output.txt"
+
+    - name: Execute Commands and Append Outputs
+      block:
+        - name: Execute command on Cisco devices
+          ios_command:
+            commands:
+              - show mac address-table
+              - show ip arp
+              - show lldp neighbors details
+              - show cdp neighbors details
+              - show etherchannel summary
+              - show interface description
+              - show interface status
+              - show ip interface brief
+          register: command_output
+
+        - name: Append outputs to combined output file with device IP separator
+          lineinfile:
+            line: "{{ inventory_hostname }} === Device IP=== {{ hostvars[inventory_hostname]['ansible_host'] }} "
+            dest: "/path/to/combined_output.txt"
+
+        - name: Append command outputs to combined output file
+          lineinfile:
+            line: "{{ item }}"
+            dest: "/path/to/combined_output.txt"
+          loop: "{{ command_output.stdout }}"
+      delegate_to: localhost
+
+    
