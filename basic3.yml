@@ -1,0 +1,89 @@
+---
+- name: Execute Commands on Cisco Devices and Archive Files
+  hosts: cisco_devices
+  gather_facts: false
+  connection: network_cli
+  tasks:
+    - name: Include vault file
+      ansible.builtin.include_vars: vault.yml
+
+    - name: Create directory for storing output files
+      ansible.builtin.file:
+        path: "/path/to/output_files"
+        state: directory
+
+    - name: Set date variable
+      ansible.builtin.set_fact:
+        current_date: "{{ ansible_date_time.date }}"
+
+    - name: Execute Commands and Save Outputs to Files
+      block:
+        - name: Execute commands on Cisco devices
+          ansible.builtin.ios_command:
+            commands:
+              - show mac address-table
+              - show ip arp
+              - show lldp neighbors details
+              - show cdp neighbors details
+              - show etherchannel summary
+              - show interface description
+              - show interface status
+              - show ip interface brief
+          register: command_output
+
+        - name: Save command outputs to individual files
+          ansible.builtin.copy:
+            content: |
+              CMD output for "show mac address-table" is
+              {{ command_output.stdout[0] }}
+
+              CMD output for "show ip arp" is
+              {{ command_output.stdout[1] }}
+
+              CMD output for "show lldp neighbors details" is
+              {{ command_output.stdout[2] }}
+
+              CMD output for "show cdp neighbors details" is
+              {{ command_output.stdout[3] }}
+
+              CMD output for "show etherchannel summary" is
+              {{ command_output.stdout[4] }}
+
+              CMD output for "show interface description" is
+              {{ command_output.stdout[5] }}
+
+              CMD output for "show interface status" is
+              {{ command_output.stdout[6] }}
+
+              CMD output for "show ip interface brief" is
+              {{ command_output.stdout[7] }}
+            dest: "/path/to/output_files/{{ inventory_hostname }}_{{ current_date }}.txt"
+          when: command_output.stdout | length > 0
+
+      delegate_to: localhost
+
+    # - name: Copy files to designated server
+    #   ansible.builtin.scp:
+    #     src: "/path/to/output_files/{{ inventory_hostname }}_{{ current_date }}.txt"
+    #     dest: "username@remote_server:/path/to/remote/output_directory/"
+    #     port: 22 
+    #     password: "{{ ansible_password }}"
+    #   delegate_to: localhost
+
+    - name: Archive files older than 1 month
+      ansible.builtin.find:
+        paths: "/path/to/output_files"
+        age: 30d
+        recurse: yes
+      register: files_to_archive
+
+    # - name: Delete old files
+    #   ansible.builtin.file:
+    #     path: "{{ item.path }}"
+    #     state: absent
+    #   with_items: "{{ files_to_archive.files }}"
+    #   when: files_to_archive.matched > 0
+
+# vault.yml
+# ansible_user: common_username
+# ansible_password: common_password
