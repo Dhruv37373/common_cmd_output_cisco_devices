@@ -1,6 +1,6 @@
 ---
 - name: Execute Commands on Cisco Devices and Archive Files
-  hosts: 10.208.22.35
+  hosts: 10.20.30.40
   gather_facts: false
   connection: ansible.netcommon.network_cli
   tasks:
