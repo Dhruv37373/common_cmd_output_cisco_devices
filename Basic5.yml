@@ -82,14 +82,13 @@
         dest: "/home/ppaf/my_ansible_project/allZips/{{ current_timestamp }}.zip"
 
     - name: copy zip file to the destination server
-    - name: Copy zip file to the destination server with authentication
-  hosts: your_destination_host
-  tasks:
-    - name: Copy zip file to the destination server
-      ansible.builtin.synchronize:
-        src: /path/to/your/destination/folder/your_archive.zip
-        dest: /path/on/destination/server/your_archive.zip
-        mode: pull
+      hosts: your_destination_host
+      tasks:
+        - name: Copy zip file to the destination server
+            ansible.builtin.synchronize:
+              src: /path/to/your/destination/folder/your_archive.zip
+              dest: /path/on/destination/server/your_archive.zip
+              mode: pull
       vars:
         ansible_ssh_user: your_remote_user
         ansible_ssh_pass: your_remote_password
