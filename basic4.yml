@@ -1,0 +1,61 @@
+---
+- name: Execute Commands on Cisco Devices and Archive Files
+  hosts: 10.208.22.35
+  gather_facts: false
+  connection: ansible.netcommon.network_cli
+  tasks:
+    - name: Include vault file
+      ansible.builtin.include_vars: vault.yml
+
+    - name: Create directory for storing output files
+      ansible.builtin.file:
+        path: "/home/ppaf/my_ansible_project/"
+        state: directory
+
+   # - name: Set date variable
+   #   ansible.builtin.set_fact:
+   #     current_date: "{{ ansible_date_time.date }}"
+
+    - name: Execute Commands and Save Outputs to Files
+      block:
+        - name: Execute commands on Cisco devices
+          ansible.builtin.ios_command:
+            commands:
+              - show mac address-table
+              - show ip arp
+              - show lldp neighbors detail
+              - show cdp neighbors detail
+              - show etherchannel summary
+              - show interface description
+              - show interface status
+              - show ip interface brief
+          register: command_output
+
+        - name: Save command outputs to individual files
+          ansible.builtin.copy:
+            content: |
+              CMD output for "show mac address-table" is
+              {{ command_output.stdout[0] }}
+
+              CMD output for "show ip arp" is
+              {{ command_output.stdout[1] }}
+
+              CMD output for "show lldp neighbors details" is
+              {{ command_output.stdout[2] }}
+
+              CMD output for "show cdp neighbors details" is
+              {{ command_output.stdout[3] }}
+
+              CMD output for "show etherchannel summary" is
+              {{ command_output.stdout[4] }}
+
+              CMD output for "show interface description" is
+              {{ command_output.stdout[5] }}
+
+              CMD output for "show interface status" is
+              {{ command_output.stdout[6] }}
+
+              CMD output for "show ip interface brief" is
+              {{ command_output.stdout[7] }}
+            dest: "/home/ppaf/my_ansible_project/{{ inventory_hostname }}.txt"
+          when: command_output.stdout | length > 0
