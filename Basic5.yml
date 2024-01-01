@@ -32,74 +32,47 @@
           register: command_output
 
         - name: Save command outputs to individual files
-          ansible.builtin.copy:
-            content: |
-              CMD output for "show mac address-table" is
-              {{ command_output.stdout[0] }}
-
-              CMD output for "show ip arp" is
-              {{ command_output.stdout[1] }}
-
-              CMD output for "show lldp neighbors details" is
-              {{ command_output.stdout[2] }}
-
-              CMD output for "show cdp neighbors details" is
-              {{ command_output.stdout[3] }}
-
-              CMD output for "show etherchannel summary" is
-              {{ command_output.stdout[4] }}
-
-              CMD output for "show interface description" is
-              {{ command_output.stdout[5] }}
-
-              CMD output for "show interface status" is
-              {{ command_output.stdout[6] }}
-
-              CMD output for "show ip interface brief" is
-              {{ command_output.stdout[7] }}
-            dest: "/home/ppaf/my_ansible_project/{{ current_timestamp }}/{{ inventory_hostname }}.txt"
-          when: command_output.stdout | length > 0
-- name: Save command outputs to individual files
   ansible.builtin.copy:
     content: |
       ###############################
-      # CMD output for "show mac address-table"
+      CMD output for "show mac address-table"
       ###############################
       {{ command_output.stdout[0] }}
 
       ###############################
-      # CMD output for "show ip arp"
+      CMD output for "show ip arp"
       ###############################
       {{ command_output.stdout[1] }}
 
       ###############################
-      # CMD output for "show lldp neighbors details"
+      CMD output for "show lldp neighbors details"
       ###############################
       {{ command_output.stdout[2] }}
 
       ###############################
-      # CMD output for "show cdp neighbors details"
+      CMD output for "show cdp neighbors details"
       ###############################
       {{ command_output.stdout[3] }}
 
       ###############################
-      # CMD output for "show etherchannel summary"
+      CMD output for "show etherchannel summary"
       ###############################
       {{ command_output.stdout[4] }}
 
       ###############################
-      # CMD output for "show interface description"
+      CMD output for "show interface description"
       ###############################
       {{ command_output.stdout[5] }}
 
       ###############################
-      # CMD output for "show interface status"
+      CMD output for "show interface status"
       ###############################
       {{ command_output.stdout[6] }}
 
       ###############################
-      # CMD output for "show ip interface brief"
+      CMD output for "show ip interface brief"
       ###############################
       {{ command_output.stdout[7] }}
     dest: "/home/ppaf/my_ansible_project/{{ current_timestamp }}/{{ inventory_hostname }}.txt"
   when: command_output.stdout | length > 0
+
