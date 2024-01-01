@@ -79,6 +79,9 @@
     - name: Create a zip file of the folder
       ansible.builtin.archive:
         path: "/home/ppaf/my_ansible_project/{{ current_timestamp }}"
-        dest: "/home/ppaf/my_ansible_project/{{ current_timestamp }}.zip"
+        dest: "/home/ppaf/my_ansible_project/allZips/{{ current_timestamp }}.zip"
+
+    - name: copy zip file to the destination server
+    
 
 
