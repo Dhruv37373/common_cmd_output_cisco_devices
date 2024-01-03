@@ -1,0 +1,107 @@
+---
+- name: Execute Commands on Cisco Devices and Archive Files
+  hosts: ios
+  gather_facts: false
+  tasks:
+    # - name: Include vault file
+    #   ansible.builtin.include_vars: vault.yml
+
+    - name: Capture current timestamp
+      ansible.builtin.set_fact:
+        current_timestamp: "{{ lookup('pipe', 'date \"+%Y-%m-%d_%H-%M-%S\"') }}"
+
+    - name: Create directory for storing output files
+      ansible.builtin.file:
+        path: "/home/ppaf/my_ansible_project/result/{{ current_timestamp }}"
+        state: directory
+
+    - name: Ping each device and execute commands if reachable
+      ansible.builtin.ping:
+      register: ping_result
+      ignore_errors: true
+
+    - name: Execute Commands and Save Outputs to Files
+      block:
+        - name: Skip if device is not reachable
+          ansible.builtin.fail:
+            msg: "Skipping device as it is not reachable."
+          when: ping_result.failed
+
+        - name: Execute commands on Cisco devices
+          ansible.builtin.ios_command:
+            commands:
+              - show mac address-table
+              - show ip arp
+              - show lldp neighbors detail
+              - show cdp neighbors detail
+              - show etherchannel summary
+              - show interface description
+              - show interface status
+              - show ip interface brief
+          register: command_output
+
+        - name: Save command outputs to individual files
+          ansible.builtin.copy:
+            content: |
+              ###############################
+              CMD output for "show mac address-table"
+              ###############################
+              {{ command_output.stdout[0] }}
+
+              ###############################
+              CMD output for "show ip arp"
+              ###############################
+              {{ command_output.stdout[1] }}
+
+              ###############################
+              CMD output for "show lldp neighbors details"
+              ###############################
+              {{ command_output.stdout[2] }}
+
+              ###############################
+              CMD output for "show cdp neighbors details"
+              ###############################
+              {{ command_output.stdout[3] }}
+
+              ###############################
+              CMD output for "show etherchannel summary"
+              ###############################
+              {{ command_output.stdout[4] }}
+
+              ###############################
+              CMD output for "show interface description"
+              ###############################
+              {{ command_output.stdout[5] }}
+
+              ###############################
+              CMD output for "show interface status"
+              ###############################
+              {{ command_output.stdout[6] }}
+
+              ###############################
+              CMD output for "show ip interface brief"
+              ###############################
+              {{ command_output.stdout[7] }}
+            dest: "/home/ppaf/my_ansible_project/result/{{ current_timestamp }}/{{ inventory_hostname }}.txt"
+          when: command_output.stdout | length > 0
+
+    - name: Log results to a central log file
+      ansible.builtin.lineinfile:
+        path: "/home/ppaf/my_ansible_project/device_logs/{{ current_timestamp }}/all_logs.log"
+        line: "{{ inventory_hostname }} - {{ 'Command execution successful' if not ping_result.failed else 'Device not reachable, skipped' }}"
+
+    # - name: Create a zip file of the folder
+    #   ansible.builtin.archive:
+    #     path: "/home/ppaf/my_ansible_project/result/{{ current_timestamp }}"
+    #     dest: "/home/ppaf/my_ansible_project/allZips/{{ current_timestamp }}.zip"
+
+    # - name: Copy zip file to the destination server
+    #   hosts: your_destination_host
+    #   tasks:
+    #     - name: Copy zip file to the destination server
+    #       ansible.builtin.synchronize:
+    #         src: "/home/ppaf/my_ansible_project/allZips/{{ current_timestamp }}.zip"
+    #         dest: "/path/on/destination/server/{{ current_timestamp }}.zip"
+    #       vars:
+    #         ansible_ssh_user: your_remote_user
+    #         ansible_ssh_pass: your_remote_password
