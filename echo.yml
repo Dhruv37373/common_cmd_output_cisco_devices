@@ -2,9 +2,10 @@ fatal: [10.208.22.35]: FAILED! => {"changed": false, "msg": "Destination /home/p
 
 ---
 - name: Execute Commands on Cisco Devices and Archive Files
-  hosts: ios
+  hosts: 10.20.20.40
   gather_facts: false
   connection: network_cli
+
   tasks:
     - name: Capture current timestamp
       ansible.builtin.set_fact:
@@ -89,3 +90,19 @@ fatal: [10.208.22.35]: FAILED! => {"changed": false, "msg": "Destination /home/p
       ansible.builtin.lineinfile:
         path: "/home/ppaf/my_ansible_project/device_logs/{{ current_timestamp }}/all_logs.log"
         line: "{{ inventory_hostname }} - Command execution successful"
+
+    # - name: Create a zip file of the folder
+    #   ansible.builtin.archive:
+    #     path: "/home/ppaf/my_ansible_project/result/{{ current_timestamp }}"
+    #     dest: "/home/ppaf/my_ansible_project/allZips/{{ current_timestamp }}.zip"
+
+    # - name: Copy zip file to the destination server
+    #   hosts: your_destination_host
+    #   tasks:
+    #     - name: Copy zip file to the destination server
+    #       ansible.builtin.synchronize:
+    #         src: "/home/ppaf/my_ansible_project/allZips/{{ current_timestamp }}.zip"
+    #         dest: "/path/on/destination/server/{{ current_timestamp }}.zip"
+    #       vars:
+    #         ansible_ssh_user: your_remote_user
+    #         ansible_ssh_pass: your_remote_password
