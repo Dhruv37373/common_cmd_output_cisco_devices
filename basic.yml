@@ -1,3 +1,4 @@
+"module_stdout": "\r\nLine has invalid autocommand \"/bin/sh -c '/usr/bin/python && sleep 0'\"", "msg": "MODULE FAILURE\nSee stdout/stderr for the exact error", "rc": 0, "warnings": ["Platform unknown on host 10.208.22.35 is using the discovered Python interpreter at /usr/bin/python, but future installation of another Python interpreter could change the meaning of that path. See https://docs.ansible.com/ansible/2.10/reference_appendices/interpreter_discovery.html for more information."]}
 ---
 - name: Execute Commands on Cisco Devices
   hosts: cisco_devices
