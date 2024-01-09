@@ -1,6 +1,6 @@
 ---
 - name: Execute Commands on Cisco Devices and Archive Files
-  hosts: 10.20.20.40
+  hosts: 10.28.212.35
   gather_facts: false
   connection: network_cli
 
@@ -14,15 +14,15 @@
         path: "/home/ppaf/my_ansible_project/result/{{ current_timestamp }}"
         state: directory
 
-    - name: Check reachability using a basic command
-      ansible.builtin.command: echo hello
-      register: reachability_check
+    - name: ping each device and execute command if reachable
+      ansible.builtin.ping:
+      register: ping_result
       ignore_errors: true
 
     - name: Skip if device is not reachable
       ansible.builtin.fail:
         msg: "Skipping device as it is not reachable."
-      when: reachability_check.failed
+      when: ping_result.failed
 
     - name: Execute Commands and Save Outputs to Files
       block:
@@ -82,7 +82,7 @@
               ###############################
               {{ command_output.stdout[7] }}
             dest: "/home/ppaf/my_ansible_project/result/{{ current_timestamp }}/{{ inventory_hostname }}.txt"
-          when: command_output.stdout | length > 0
+
 
     - name: Log results to a central log file
       ansible.builtin.block:
