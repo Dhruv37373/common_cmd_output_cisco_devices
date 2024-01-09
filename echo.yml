@@ -1,3 +1,5 @@
+fatal: [10.208.22.35]: FAILED! => {"changed": false, "msg": "Destination /home/ppaf/my_ansible_project/device_logs/2024-01-09_09-30-58/all_logs.log does not exist !", "rc": 257}
+
 ---
 - name: Execute Commands on Cisco Devices and Archive Files
   hosts: ios
