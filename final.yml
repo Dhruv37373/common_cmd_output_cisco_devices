@@ -1,6 +1,6 @@
 ---
 - name: Execute Commands on Cisco Devices and Archive Files
-  hosts: 10.28.212.35
+  hosts: 10.28.2.35
   gather_facts: false
   connection: network_cli
 
@@ -83,16 +83,21 @@
               {{ command_output.stdout[7] }}
             dest: "/home/ppaf/my_ansible_project/result/{{ current_timestamp }}/{{ inventory_hostname }}.txt"
 
+    - name: create directory for logging
+      block:
+        - name: ensure directory exist
+          ansible.builtin.file:
+            path: "/home/ppaf/my_ansible_project/device_logs/{{ current_timestamp }}"
+            state: directory
 
-    - name: Log results to a central log file
-      ansible.builtin.block:
-        tasks:
-          - name: Ensure the directory exists
-            ansible.builtin.file:
-              path: "/home/ppaf/my_ansible_project/device_logs/{{ current_timestamp }}"
-              state: directory
+        - name: create log file
+          ansible.builtin.file:
+            path: "/home/ppaf/my_ansible_project/device_logs/{{ current_timestamp }}/all_logs.txt"
+            state: touch
 
-          - name: Log command execution results
-            ansible.builtin.lineinfile:
-              path: "/home/ppaf/my_ansible_project/device_logs/{{ current_timestamp }}/all_logs.log"
-              line: "{{ inventory_hostname }} - Command execution successful"
+        - name: log the result
+          ansible.builtin.lineinfile:
+             path: "/home/ppaf/my_ansible_project/device_logs/{{ current_timestamp }}/all_logs.txt"
+             line: "{{ inventory_hostname }} - Command execution successful"
+
+
