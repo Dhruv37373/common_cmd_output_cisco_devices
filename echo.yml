@@ -1,3 +1,19 @@
+ERROR! unexpected parameter type in action: <class 'ansible.parsing.yaml.objects.AnsibleSequence'>
+
+The error appears to be in '/home/ppaf/my_ansible_project/final.yml': line 87, column 7, but may
+be elsewhere in the file depending on the exact syntax problem.
+
+The offending line appears to be:
+
+
+    - name: Log results to a central log file
+      ^ here
+
+
+
+
+
+
 ---
 - name: Execute Commands on Cisco Devices and Archive Files
   hosts: 10.20.20.40
