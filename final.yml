@@ -98,6 +98,7 @@
         - name: log the result
           ansible.builtin.lineinfile:
              path: "/home/ppaf/my_ansible_project/device_logs/{{ current_timestamp }}/all_logs.txt"
-             line: "{{ inventory_hostname }} - Command execution successful"
+             line: "{{ inventory_hostname }} - Command execution {{ 'successful' if not ping_result.failed else 'failed' }}"
+             #"{{ inventory_hostname }} - Command execution successful"
 
 
