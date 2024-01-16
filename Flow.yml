@@ -1,0 +1,40 @@
+- name: ping each device and execute command if reachable
+  ansible.builtin.ping:
+  register: ping_result
+  ignore_errors: true
+
+- name: create directory for logging
+  block:
+    - name: ensure directory exists
+      ansible.builtin.file:
+        path: "/home/ppaf/my_ansible_project/device_logs/{{ current_timestamp }}"
+        state: directory
+
+    - name: create log file
+      ansible.builtin.file:
+        path: "/home/ppaf/my_ansible_project/device_logs/{{ current_timestamp }}/all_logs.txt"
+        state: touch
+
+- name: Execute Commands and Save Outputs to Files
+  block:
+    - name: Execute commands on Cisco devices
+      ansible.builtin.ios_command:
+        commands:
+          # ... (your commands)
+      register: command_output
+      ignore_errors: true
+
+    - name: Save command outputs to individual files
+      ansible.builtin.copy:
+        content: |
+          # ... (your content)
+
+        dest: "/home/ppaf/my_ansible_project/result/{{ current_timestamp }}/{{ inventory_hostname }}.txt"
+  # The condition checks if both ping and commands were executed successfully
+  when: not (ping_result.failed or command_output.failed)
+
+- name: log the result
+  ansible.builtin.lineinfile:
+    path: "/home/ppaf/my_ansible_project/device_logs/{{ current_timestamp }}/all_logs.txt"
+    line: "{{ inventory_hostname }} - Command execution {{ 'successful' if not command_output.failed else 'failed' }}"
+    create: yes
